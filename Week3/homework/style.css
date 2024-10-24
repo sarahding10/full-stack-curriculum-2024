@@ -65,4 +65,34 @@
     font-weight: bold;
     cursor: pointer;
   }
+
+  #current {
+    margin: auto 0 auto 0;
+  }
   
+  #info-container {
+    display: flex;
+  }
+
+  #forecast {
+    margin: auto;
+  }
+
+  #forecast-list {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #forecast-list li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    list-style-type: none;
+    background-color: white;
+    margin: auto;
+    padding: auto;
+    border: 1px solid blue;
+    border-radius: 5%;
+  }
+

@@ -10,6 +10,21 @@
 <body>
 	<div id='main-container'>
 		<div id='weather-container'>
+			<div id="current">
+				<h4></h4>
+				<h2></h2>
+				<div id="info-container">
+					<div id="temp-container">
+						<h2></h2>
+						<h1></h1>
+						<h4></h4>
+					</div>
+					<img>
+				</div>
+			</div>
+			<div id="forecast">
+				<ul id='forecast-list'></ul>
+			</div>
 		</div> 
 	</div>
 	<div id='side-container'>
@@ -22,10 +37,9 @@
 </body>
 
 <script>
+		const apiKey = ''
 		// USE YOUR OWN API KEY
-		const apiKey = "";
-
-        // variable that stores the city that is chosen
+        // variable that stores the city that is chose
 		let city;
         // variable that stores the weather and forecast for the city
 		let weather;
@@ -102,6 +116,100 @@
 			//printing the city object to the console
 			console.log(city);
             // BEGIN CODING HERE
+			let currentApiCall = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=imperial&appid=${apiKey}`
+			let aqiApiCall = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${city.lat}&lon=${city.lon}&appid=${apiKey}`;
+			let apiCall = `https://api.openweathermap.org/data/2.5/forecast?lat=${city.lat}&lon=${city.lon}&units=imperial&appid=${apiKey}`
+			// calls the API
+			fetch(currentApiCall)
+				.then((response) =>
+					response.json()
+					)
+					.then((data) => {
+						renderCurrentWeatherResults(city.name, city.state, data)
+					});
+			fetch(aqiApiCall)
+				.then((response) =>
+					response.json()
+					)
+					.then((data) => {
+						renderAqiResults(data)
+					});
+			fetch(apiCall)
+				.then((response) => 
+						// after recieving a response, take the response from the server and convert it to JSON 
+						response.json()
+					)
+					.then((data) => {
+						// after recieving the converted JSON data, pass the JSON to the renderWeatherResults() function
+						renderWeatherResults(data)
+					});
+		}
+
+		function renderCurrentWeatherResults(cityName, cityState, currentData) {
+			let box = document.querySelector('#weather-container').querySelector('#current')
+			let date = box.querySelector('h4')
+			let weatherTitle = box.querySelector('h2')
+
+			let infoBox = box.querySelector('#info-container')
+			let weatherCategory = infoBox.querySelector('h2')
+			let temp = infoBox.querySelector('h1')
+
+			let imgBase = `http://openweathermap.org/img/w/${currentData.weather[0].icon}.png`
+			let img = infoBox.querySelector('img')
+			
+			let raw_date = new Date(currentData.dt * 1000);
+			let options = {weekday: 'long', day: 'numeric'};
+			let formattedDate = raw_date.toLocaleDateString('en-US', options);
+			date.textContent = formattedDate;
+
+			weatherTitle.textContent = `Weather for ${cityName}, ${cityState}`;
+
+			weatherCategory.textContent = currentData.weather[0].main;
+			temp.textContent = Math.round(currentData.main.temp) + '\u00B0';
+			img.src = imgBase;
+		}
+
+		function renderAqiResults(data){
+			let box = document.querySelector('#weather-container').querySelector('#current')
+			let infoBox = box.querySelector('#info-container')
+			let aqi = infoBox.querySelector('h4')
+
+			aqi.textContent = `AQI: ${data.list[0].main.aqi}`;
+		}
+
+		function renderWeatherResults(weatherData) {
+			let container = document.querySelector('#weather-container').querySelector('#forecast');
+			const ul = container.querySelector('#forecast-list');
+			// clears out any list items from the previous search
+			ul.innerHTML = ''
+			// loops through each search result for noon time and creates and attaches a list item for the unordered list
+			const noonEntries = weatherData.list.filter(entry => entry.dt_txt.endsWith("12:00:00"));
+			noonEntries.forEach((data, index) => {
+				// creates a new unordered list element
+				const li = document.createElement('li')
+				// sets the list item's class as search-result
+				li.setAttribute('class', 'forecast-box')
+
+				// set date
+				let date = document.createElement('h4')
+				let raw_date = new Date(data.dt * 1000);
+				let options = {weekday: 'long', day: 'numeric'};
+				date.textContent = raw_date.toLocaleDateString('en-US', options);
+
+				// set image
+				let img = document.createElement('img')
+				img.src = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+
+				// set temp
+				const degree = '\u00B0';
+				let temp = document.createElement('h3');
+				temp.textContent = Math.round(data.main.temp_min) + degree + ' to ' + Math.round(data.main.temp_max) + degree;
+
+				li.appendChild(date);
+				li.appendChild(img);
+				li.appendChild(temp);
+				ul.appendChild(li);
+			})	
 		}
 	</script>
 </html>

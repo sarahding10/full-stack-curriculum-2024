@@ -21,6 +21,27 @@
 
     <script>
 
+      let shoppingList = JSON.parse(localStorage.getItem("shoppingList"))
+      console.log(shoppingList)
+      if(!shoppingList){
+        shoppingList = [];
+      }
+      else{
+        shoppingList.forEach(element => {
+        addItem(element)
+      })
+      }
+
+      let enterButton = document.querySelector("button")
+      enterButton.addEventListener("click", createListItem)
+
+      function createListItem() {
+        const inputField = document.querySelector("#item");
+        addItem(inputField.value);
+        inputField.value = "";
+        inputField.focus()
+      }
+
       //conveniently done for you!
       function addItem(text) {
         //grab the list
@@ -39,6 +60,19 @@
         li.appendChild(span);
         li.appendChild(deleteButton);
         li.appendChild(saveButton);
+
+        deleteButton.addEventListener("click", () => {
+          list.removeChild(li)
+          shoppingList = shoppingList.filter((item) => item != text);
+          localStorage.setItem("shoppingList", JSON.stringify(shoppingList))
+        })
+
+        saveButton.addEventListener("click", () => {
+          li.removeChild(saveButton)
+          shoppingList.push(text)
+          localStorage.setItem("shoppingList", JSON.stringify(shoppingList))
+          console.log(localStorage)
+        })
         
       }
 
