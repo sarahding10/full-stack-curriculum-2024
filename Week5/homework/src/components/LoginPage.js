@@ -26,7 +26,6 @@ function LoginPage() {
     login(username, password)
   };
 
-
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -42,7 +41,7 @@ function LoginPage() {
           sx={{
             marginBottom: 2,
             height: 200,
-            width: 200, 
+            width: 200,
           }}
           alt="UT Longhorn"
           src="/longhorn.jpg"
