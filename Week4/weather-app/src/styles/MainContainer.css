@@ -13,4 +13,11 @@
 #weather-container {
   height: 60%;
   width: 90%;
+  display: block;
 }
+
+.weather-card-section {
+  display: flex;
+  flex-direction: row;
+}
+

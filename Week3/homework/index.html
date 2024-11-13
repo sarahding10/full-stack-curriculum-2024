@@ -37,7 +37,7 @@
 </body>
 
 <script>
-		const apiKey = ''
+		const apiKey = '0e697c660caeb16aca57b04321e2d005'
 		// USE YOUR OWN API KEY
         // variable that stores the city that is chose
 		let city;
@@ -183,6 +183,7 @@
 			// clears out any list items from the previous search
 			ul.innerHTML = ''
 			// loops through each search result for noon time and creates and attaches a list item for the unordered list
+			console.log(weatherData)
 			const noonEntries = weatherData.list.filter(entry => entry.dt_txt.endsWith("12:00:00"));
 			noonEntries.forEach((data, index) => {
 				// creates a new unordered list element

@@ -1,0 +1,12 @@
+.weather-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    list-style-type: none;
+    background-color: white;
+    margin: auto;
+    padding: 2%;
+    border: 1px solid blue;
+    border-radius: 2%;
+}

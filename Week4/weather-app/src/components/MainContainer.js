@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../styles/MainContainer.css"; // Import the CSS file for MainContainer
 
+import WeatherCard from './WeatherCard';
+
 function MainContainer(props) {
 
   function formatDate(daysFromNow = 0) {
@@ -28,6 +30,7 @@ function MainContainer(props) {
   (e.g., 'weather') and its corresponding setter function (e.g., 'setWeather'). The initial state can be 
   null or an empty object.
   */
+  const [weather, setWeather] = useState(null)
   
   
   /*
@@ -43,6 +46,37 @@ function MainContainer(props) {
   After fetching the data, use the 'setWeather' function from the 'useState' hook to set the weather data 
   in your state.
   */
+  useEffect(() => {
+    const makeApiCall = async () => {
+      const city = props.selectedCity
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${city.lat}&lon=${city.lon}&units=imperial&appid=${props.apiKey}`);
+      const data = await response.json();
+      setWeather(data); // Update the weather state with the fetched data
+      console.log(data)
+      //renderWeatherResults()
+    };
+    if(props.selectedCity){
+      makeApiCall();
+    }
+  }, [props.selectedCity]);
+
+  function renderWeatherResults() {
+    if(weather.list){
+      // Filter out every 5th entry from the forecast list
+      const filteredWeather = weather.list.filter((_, index) => index % 5 === 0).slice(0, 5);
+
+      return filteredWeather.map((data, index) => {
+        const date = formatDate(index);
+        const icon = data.weather[0].icon
+        const degree = '\u00B0';
+        const temp_range = Math.round(data.main.temp_min) + `${degree}F - ` + Math.round(data.main.temp_max) + `${degree}F`
+
+        return (
+          <WeatherCard key={data.dt} date={date} icon={icon} temp_range={temp_range}/>
+        )
+      })
+    }
+  }
   
   
   return (
@@ -59,6 +93,15 @@ function MainContainer(props) {
         This is a good section to play around with React components! Create your own - a good example could be a WeatherCard
         component that takes in props, and displays data for each day of the week.
         */}
+        {weather && 
+        (<div>
+          <h3>{formatDate(0)}</h3>
+          <h1>Weather for {props.selectedCity.fullName}</h1>
+          <div className='weather-card-section'>
+            {renderWeatherResults()}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

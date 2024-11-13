@@ -96,6 +96,7 @@ function SideContainer(props) {
       lon: lon,
     };
     console.log(city);
+    props.setSelectedCity(city);
   }
 
   return (
