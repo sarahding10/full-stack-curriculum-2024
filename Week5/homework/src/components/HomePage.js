@@ -37,7 +37,7 @@ export default function HomePage() {
       navigate('/login')
     }
     else{
-      fetch(BASE_URL + `/${currentUser}`)
+      fetch(BASE_URL + `/tasks/${currentUser}`)
       .then((response) => response.json())
       .then((data) => setTasks(data))
     }
@@ -50,7 +50,7 @@ export default function HomePage() {
       // TODO: Support adding todo items to your todo list through the API.
       // In addition to updating the state directly, you should send a request
       // to the API to add a new task and then update the state based on the response.
-      fetch(BASE_URL, {
+      fetch(BASE_URL + '/tasks', {
         method:'POST', 
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -79,7 +79,7 @@ export default function HomePage() {
     // TODO: Support removing/checking off todo items in your todo list through the API.
     // Similar to adding tasks, when checking off a task, you should send a request
     // to the API to update the task's status and then update the state based on the response.
-    fetch(BASE_URL + `/${newTask.id}`, {
+    fetch(BASE_URL + `/tasks/${newTask.id}`, {
       method: "DELETE"
     })
     .then((response) => response.json())
