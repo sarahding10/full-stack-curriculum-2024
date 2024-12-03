@@ -43,13 +43,14 @@ app.get("/tasks", async (req, res) => {
 
 // GET: Endpoint to retrieve all tasks for a user
 app.get('/tasks/:user', async (req, res) => {
-  const user = req.params.user;
-  const tasksSnapshot = await db.collection("tasks").where("user", "==", user).get();
-  const tasks = tasksSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-  res.json(tasks);
+  // const user = req.params.user;
+  // const tasksSnapshot = await db.collection("tasks").where("user", "==", user).get();
+  // const tasks = tasksSnapshot.docs.map(doc => ({
+  //   id: doc.id,
+  //   ...doc.data()
+  // }));
+  //res.json(tasks);
+  res.json("hello word")
 });
 
 const validateInput = (req, res, next) => {
