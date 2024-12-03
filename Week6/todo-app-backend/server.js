@@ -23,7 +23,7 @@ app.get("/tasks", async (req, res) => {
   try {
     // Fetching all documents from the "tasks" collection in Firestore
     const snapshot = await db.collection("tasks").get();
-    
+    console.log(snapshot.docs)
     let tasks = [];
     // Looping through each document and collecting data
     snapshot.forEach((doc) => {
@@ -42,13 +42,53 @@ app.get("/tasks", async (req, res) => {
 });
 
 // GET: Endpoint to retrieve all tasks for a user
-// ... 
+app.get('/tasks/:user', async (req, res) => {
+  const { user } = req.params.user;
+  const tasksSnapshot = await db.collection("tasks").where("user", "==", user).get();
+  if (tasksSnapshot.empty) {
+      res.status(404).json({ error: "No tasks found for this user" });
+  } else {
+      const tasks = tasksSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+      }));
+      res.json(tasks);
+  }
+});
+
+const validateInput = (req, res, next) => {
+  const { user, task } = req.body;
+  if (user && task) {
+      next();
+  } else {
+      res.status(400).json({ error: 'Incomplete task' });
+  }
+};
 
 // POST: Endpoint to add a new task
-// ...
+app.post('/tasks', validateInput, async (req, res) => {
+  const newTask = {
+      user: req.body.user,
+      task: req.body.task,
+      finished: false
+  };
+  const taskRef = await db.collection("tasks").add(newTask);
+  res.json({ id: taskRef.id, ...newTask });
+});
 
 // DELETE: Endpoint to remove a task
-// ...
+app.delete('/tasks/:id', async (req, res) => {
+  const { id } = req.params;
+  const taskRef = db.collection("tasks").doc(id);
+  const taskSnapshot = await taskRef.get();
+
+  if (!taskSnapshot.exists) {
+      res.status(404).json({ error: "Task not found" });
+  } else {
+      await taskRef.delete();
+      res.json({ id, ...taskSnapshot.data() });
+  }
+});
 
 // Setting the port for the server to listen on
 const PORT = process.env.PORT || 3001;
