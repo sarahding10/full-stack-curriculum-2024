@@ -32,7 +32,7 @@ app.get("/tasks", async (req, res) => {
         ...doc.data(),  // Document data
       });
     });
-    
+
     // Sending a successful response with the tasks data
     res.status(200).send(tasks);
   } catch (error) {
@@ -43,34 +43,30 @@ app.get("/tasks", async (req, res) => {
 
 // GET: Endpoint to retrieve all tasks for a user
 app.get('/tasks/:user', async (req, res) => {
-  const { user } = req.params.user;
+  const user = req.params.user;
   const tasksSnapshot = await db.collection("tasks").where("user", "==", user).get();
-  if (tasksSnapshot.empty) {
-      res.status(404).json({ error: "No tasks found for this user" });
-  } else {
-      const tasks = tasksSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-      }));
-      res.json(tasks);
-  }
+  const tasks = tasksSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+  res.json(tasks);
 });
 
 const validateInput = (req, res, next) => {
   const { user, task } = req.body;
   if (user && task) {
-      next();
+    next();
   } else {
-      res.status(400).json({ error: 'Incomplete task' });
+    res.status(400).json({ error: 'Incomplete task' });
   }
 };
 
 // POST: Endpoint to add a new task
 app.post('/tasks', validateInput, async (req, res) => {
   const newTask = {
-      user: req.body.user,
-      task: req.body.task,
-      finished: false
+    user: req.body.user,
+    task: req.body.task,
+    finished: false
   };
   const taskRef = await db.collection("tasks").add(newTask);
   res.json({ id: taskRef.id, ...newTask });
@@ -83,10 +79,10 @@ app.delete('/tasks/:id', async (req, res) => {
   const taskSnapshot = await taskRef.get();
 
   if (!taskSnapshot.exists) {
-      res.status(404).json({ error: "Task not found" });
+    res.status(404).json({ error: "Task not found" });
   } else {
-      await taskRef.delete();
-      res.json({ id, ...taskSnapshot.data() });
+    await taskRef.delete();
+    res.json({ id, ...taskSnapshot.data() });
   }
 });
 
