@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
     const login = (email, password) => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                console.log(userCredential.user);
+                // console.log(userCredential.user);
                 setCurrentUser(userCredential.user);
                 // this method of retrieving access token also works
                 // console.log(userCredential.user.accessToken)

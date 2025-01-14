@@ -16,6 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect } from "react";
 
+import { getAuth } from 'firebase/auth';
+
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -32,16 +34,46 @@ export default function HomePage() {
   // Currently, the tasks are hardcoded. You'll need to make an API call
   // to fetch the list of tasks instead of using the hardcoded data.
 
+  // useEffect(() => {
+  //   if(!currentUser){
+  //     navigate('/login')
+  //   }
+  //   else{
+  //     console.log(currentUser.getIdToken())
+  //     fetch(BASE_URL + `/tasks/${currentUser.uid}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Authorization': `Bearer ${currentUser.getIdToken()}`
+  //       }
+  //     })
+  //     .then((response) => response.json())
+  //     .then((data) => setTasks(data))
+  //   }
+  // }, [currentUser])
+
   useEffect(() => {
-    if(!currentUser){
-      navigate('/login')
-    }
-    else{
-      fetch(BASE_URL + `/tasks/${currentUser.uid}`)
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-    }
-  }, [currentUser])
+    const fetchData = async () => {
+      if (!currentUser) {
+        navigate('/login');
+      } else {
+        try {
+          const tokenId = await currentUser.getIdToken();  // Await the promise to get the actual token
+          const response = await fetch(BASE_URL + `/tasks/${currentUser.uid}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${tokenId}`  // Use the resolved token
+            }
+          });
+          const data = await response.json();
+          setTasks(data);
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      }
+    };
+    fetchData();
+  }, [currentUser]);
+  
 
   function handleAddTask() {
     // Check if task name is provided and if it doesn't already exist.
@@ -50,7 +82,6 @@ export default function HomePage() {
       // TODO: Support adding todo items to your todo list through the API.
       // In addition to updating the state directly, you should send a request
       // to the API to add a new task and then update the state based on the response.
-      console.log(currentUser.uid, newTaskName)
       fetch(BASE_URL + '/tasks', {
         method:'POST', 
         headers: {'Content-Type': 'application/json'},
@@ -70,7 +101,6 @@ export default function HomePage() {
 
   // Function to toggle the 'finished' status of a task.
   function toggleTaskCompletion(newTask) {
-    console.log(newTask.id)
     setTasks(
       taskList.map((task) =>
         task.name === newTask.name ? { ...task, finished: !task.finished } : task
