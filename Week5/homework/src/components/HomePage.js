@@ -37,7 +37,7 @@ export default function HomePage() {
       navigate('/login')
     }
     else{
-      fetch(BASE_URL + `/tasks/${currentUser}`)
+      fetch(BASE_URL + `/tasks/${currentUser.uid}`)
       .then((response) => response.json())
       .then((data) => setTasks(data))
     }
@@ -50,11 +50,12 @@ export default function HomePage() {
       // TODO: Support adding todo items to your todo list through the API.
       // In addition to updating the state directly, you should send a request
       // to the API to add a new task and then update the state based on the response.
+      console.log(currentUser.uid, newTaskName)
       fetch(BASE_URL + '/tasks', {
         method:'POST', 
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-          user: currentUser,
+          user: currentUser.uid,
           name: newTaskName,
           finished: false})})
         .then((response) => response.json())
@@ -158,7 +159,7 @@ export default function HomePage() {
             <List sx={{ marginTop: 3 }}>
               {taskList.map((task) => (
                 <ListItem
-                  key={task.name}
+                  key={task.id}
                   dense
                   onClick={() => toggleTaskCompletion(task)}
                 >
