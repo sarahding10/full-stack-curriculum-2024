@@ -55,7 +55,9 @@ app.get("/tasks", async (req, res) => {
 // Firebase Admin Authentication Middleware
 const auth = (req, res, next) => {
   try {
+    console.log(req)
     const tokenId = req.get("Authorization").split("Bearer ")[1];
+    console.log(tokenId)
     admin.auth().verifyIdToken(tokenId)
       .then((decoded) => {
         req.token = decoded;
@@ -68,7 +70,7 @@ const auth = (req, res, next) => {
 };
 
 // GET: Endpoint to retrieve all tasks for a user
-app.get('/tasks/:user', async (req, res) => {
+app.get('/tasks/:user', auth, async (req, res) => {
   const user = req.params.user;
   const tasksSnapshot = await db.collection("tasks").where("user", "==", user).get();
   const tasks = tasksSnapshot.docs.map(doc => ({
