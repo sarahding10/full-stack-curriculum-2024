@@ -68,7 +68,7 @@ const auth = (req, res, next) => {
 };
 
 // GET: Endpoint to retrieve all tasks for a user
-app.get('/tasks/:user', async (req, res) => {
+app.get('/tasks/:user', auth, async (req, res) => {
   const user = req.params.user;
   const tasksSnapshot = await db.collection("tasks").where("user", "==", user).get();
   const tasks = tasksSnapshot.docs.map(doc => ({
